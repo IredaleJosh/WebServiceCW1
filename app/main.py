@@ -15,8 +15,6 @@ class QuestionBase(BaseModel):
     question_text: str
     choices: list[ChoiceBase]
 
-
-
 # main path
 @app.get("/")
 def root():

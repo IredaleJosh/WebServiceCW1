@@ -2,6 +2,7 @@
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker, declarative_base
 
+
 database_url = "postgresql://josh:movie-secret@localhost/moviedb"
 # creates database engine and connects to postgresql
 engine = create_engine(database_url)
@@ -11,6 +12,8 @@ session_local = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 # parent class for all models
     # Base registers model, stores metadata and allows sqlalchemy to auto create tables
 Base = declarative_base()
+
+Base.metadata.create_all(bind=engine)
 
 # basic query to test its connected to engine
 # with engine.connect() as conn:
