@@ -1,2 +1,0 @@
-
-# Schemas are Pydantic Models

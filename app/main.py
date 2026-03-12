@@ -4,8 +4,10 @@
 from fastapi import FastAPI, HTTPException, Depends
 from pydantic import BaseModel
 from typing import List, Annotated
+from app.movies import router as movies_routers
 
 app = FastAPI()
+app.include_router(movies_routers)
 
 class ChoiceBase(BaseModel):
     choice_text: str

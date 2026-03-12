@@ -15,6 +15,13 @@ Base = declarative_base()
 
 Base.metadata.create_all(bind=engine)
 
+def get_db():
+    db = session_local()
+    try:
+        yield db
+    finally:
+        db.close()
+
 # basic query to test its connected to engine
 # with engine.connect() as conn:
 #     result = conn.execute(text("SELECT 1;"))
