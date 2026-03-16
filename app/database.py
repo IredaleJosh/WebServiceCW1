@@ -2,7 +2,6 @@
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker, declarative_base
 
-
 database_url = "postgresql://josh:movie-secret@localhost/moviedb"
 # creates database engine and connects to postgresql
 engine = create_engine(database_url)
@@ -16,6 +15,13 @@ Base = declarative_base()
 Base.metadata.create_all(bind=engine)
 
 def get_db():
+    db = session_local()
+    try:
+        yield db
+    finally:
+        db.close()
+
+def get_curr_user():
     db = session_local()
     try:
         yield db
