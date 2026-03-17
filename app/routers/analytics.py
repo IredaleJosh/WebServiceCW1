@@ -48,7 +48,7 @@ def sort_movies(sort: SortRatings, db: Session = Depends(get_db)):
 def average(movie_name: str, db: Session = Depends(get_db)):
     movie = db.query(Movie).filter(Movie.name == movie_name).first()
     if not movie:
-        return {"Message" : f"No Movie Called {movie_name}"}
+        raise HTTPException(status_code=404, detail="Movie called {movie_name} not found")
     ratings = db.query(Rating).filter(Rating.movies_id == movie.id).all()
     # ratings = db.query(Rating).filter(Movie.name == movie_name).all()
     if not ratings:

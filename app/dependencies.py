@@ -1,4 +1,4 @@
-# dependencies --> 
+# dependencies/ Security
 # annotated --> allows for extra information, in most cases extra validation
 from fastapi import Header, HTTPException, Depends
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm

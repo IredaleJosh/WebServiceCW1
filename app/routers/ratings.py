@@ -8,13 +8,7 @@ from app.schemas.ratings import RatingCreate, RatingUpdate, RatingDelete
 
 router = APIRouter(prefix="/ratings", tags=["Ratings"])
 
-
-# CRUD
-# CREATE
-
-# This uses the movies endpoint
-# It gets the current user
-# Creates a new review at the movie endpoint + the current user making the review
+# CREATE - Current user creates a review and stores it to their account for said movie
 @router.post("/{movie_id}/ratings")
 def create_rating(movie_id : int, rating: RatingCreate, 
     db : Session = Depends(get_db), curr_user : User = Depends(get_curr_user)):
@@ -26,7 +20,7 @@ def create_rating(movie_id : int, rating: RatingCreate,
     db.refresh(new_rating)
     return new_rating
 
-# READ 
+# READ - Search for certain reviews via its id and the user who made it
 @router.get("/{rating_id}", response_model=RatingDelete)
 def read_rating(rating_id: int, db: Session = Depends(get_db)):
     rating = db.query(Rating).filter(Rating.id == rating_id).first()
@@ -34,7 +28,7 @@ def read_rating(rating_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Rating not Found")
     return rating
 
-# UPDATE
+# UPDATE - User can update their reviews at certain id
 @router.put("/{rating_id}", response_model=RatingDelete)
 def update_rating(rating_id: int, rating_update: RatingUpdate, db: Session = Depends(get_db)):
     rating = db.query(Rating).filter(Rating.id == rating_id).first()
@@ -46,7 +40,7 @@ def update_rating(rating_id: int, rating_update: RatingUpdate, db: Session = Dep
     db.refresh(rating)
     return rating
 
-# DELETE
+# DELETE - Users can remove their reviews
 @router.delete("/{rating_id}")
 def delete_movie(rating_id: int, db: Session = Depends(get_db)):
     rating = db.query(Rating).filter(Rating.id == rating_id).first()

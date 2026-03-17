@@ -1,6 +1,4 @@
-
 # inside directory with __init__.py, so a module of the package: app.main
-
 from fastapi import FastAPI, HTTPException, Depends
 from pydantic import BaseModel
 from app.routers.movies import router as movies_routers
@@ -17,6 +15,6 @@ app.include_router(analytics_routers)
 # main path
 @app.get("/")
 def root():
-    return {"status" : "ok"}
+    return {"status" : "Ok, Welcome to Website"}
 
 
