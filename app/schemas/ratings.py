@@ -1,6 +1,12 @@
 from pydantic import BaseModel, Field
 from typing import Optional
 
+# How the ratings are displayed
+class RatingRead(BaseModel):
+    id: int
+    rating: int
+    review: str
+
 class RatingBase(BaseModel):
     rating: int = Field(..., ge=0, le=5)
     review: str | None = None

@@ -1,6 +1,18 @@
 from pydantic import BaseModel, EmailStr
 from typing import Optional
 from datetime import datetime
+from app.schemas.ratings import RatingRead
+
+# How Movies are Displayed
+class MovieRead(BaseModel):
+    id: int
+    name: str
+    summary: str
+    release: datetime
+    runtime: int
+    budget: float
+    revenue: float
+    rate_entries_movie: list[RatingRead] = []
 
 class MovieCreate(BaseModel):
     name: str

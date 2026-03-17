@@ -11,7 +11,7 @@ router = APIRouter(prefix="/users", tags=["Users"])
 
 # CRUD
 
-# CREATE/ REGISTER
+# REGISTER
 @router.post("/")
 def create_user(user: UserCreate, db : Session = Depends(get_db)):
     new_user = User(**user.dict())
