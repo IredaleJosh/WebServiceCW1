@@ -5,17 +5,20 @@ from sqlalchemy import func
 from app.database import get_db
 from app.movie import Movie, Rating, User
 from app.dependencies import check_admin
-from app.schemas.analytics import SortRatings, DisplayMovies
+from app.schemas.analytics import SortRatings, DisplayMovies, DisplayUsers
 
 router = APIRouter(prefix="/analytics", tags=["Analytics"])
 
 # Public
 # Highest/ Lowest Rated Movies either most ratings or average
-@router.get("/SortedMovies", response_model=list[DisplayMovies])
+@router.get("/filter/SortedMovies", response_model=list[DisplayMovies])
 def sort_movies(sort: SortRatings, db: Session = Depends(get_db)):
     # Get all movies and average their ratings
-    rate_movies = db.query(Movie, func.avg(Rating.rating).label("avg_rating")).join(Rating, Rating.movies_id == Movie.id).group_by(Movie.id)
+    rate_movies = db.query(Movie, func.avg(Rating.rating).label("avg_rating")).join(
+        Rating, Rating.movies_id == Movie.id).group_by(
+        Movie.id)
     year_movies = db.query(Movie)
+    # if highest
     if sort.value == "Highest":
         rate_movies = rate_movies.order_by(func.avg(Rating.rating).desc()).all()
         rate_movies = [{"id":m.id, "name":m.name, "rating": float(avg_rating)} for m, avg_rating in rate_movies]
@@ -36,12 +39,20 @@ def sort_movies(sort: SortRatings, db: Session = Depends(get_db)):
         year_movies = [{"id": m.id, "name": m.name, "release": m.release} for m in year_movies]
         return year_movies
 
+# rate_movies = db.query(Movie, func.avg(Rating.rating).label("avg_rating")).join(
+#     Rating, Rating.movies_id == Movie.id).group_by(
+#     Movie.id)
+
 # Average Rating for a Movie
-@router.get("/{movie_id}/avg")
-def average(movie_id: int, db: Session = Depends(get_db)):
-    ratings = db.query(Rating).filter(Rating.movies_id == movie_id).all()
+@router.get("/filter/average")
+def average(movie_name: str, db: Session = Depends(get_db)):
+    movie = db.query(Movie).filter(Movie.name == movie_name).first()
+    if not movie:
+        return {"Message" : f"No Movie Called {movie_name}"}
+    ratings = db.query(Rating).filter(Rating.movies_id == movie.id).all()
+    # ratings = db.query(Rating).filter(Movie.name == movie_name).all()
     if not ratings:
-        return {"Message : No Ratings Available"}
+        return {"Message" : f"No Ratings Available for{movie_name}"}
     average=0
     count=0
     for r in ratings:
@@ -58,25 +69,26 @@ def search_movies_by_name(query: str, db: Session = Depends(get_db)):
         return {"Message" : f"No Movies with {query}, try again"}
     return results
 
-# Sort by Genres
+# Sort by Genres by popularity
 @router.get("/filter/genre")
 def search_genre(genre: str, db: Session = Depends(get_db)):
     genres = db.query(Movie).filter(Movie.name.ilike(f"%{genre}%")).all()
     return genres
 
-# Actors in most movies
-
-# Actors in highest rated movies
-
-# Directors with highest rated movies
-
-# Total number of users
-
-# Genre popularity 
-
 # Admin
-
-# Most active users via ratings they did
+# Most active users via number of ratings they did
+@router.get("/admin/filter/ActiveUsers")
+def user_reviews(db: Session = Depends(get_db), admin: User = Depends(check_admin)):
+    users = db.query(User, func.count(Rating.id).label("Number_of_Reviews")).join(
+        Rating, Rating.users_id == User.id).group_by(
+        User.id).order_by(
+        func.count(Rating.id).desc()).all()
+    return [{"id":m.id, "username":m.username, "review count": Number_of_Reviews} for m, Number_of_Reviews in users]
 
 # Search a certain user and list all reviews
-
+@router.get("/admin/filter/SearchUser", response_model=DisplayUsers)
+def search_user(user_id: int, db: Session = Depends(get_db), admin: User = Depends(check_admin)):
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return user

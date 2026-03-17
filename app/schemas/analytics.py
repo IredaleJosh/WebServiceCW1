@@ -2,6 +2,7 @@ from pydantic import BaseModel, EmailStr
 from typing import Optional
 from datetime import datetime
 from enum import Enum
+from app.schemas.ratings import RatingRead
 
 class SortRatings(str, Enum):
     highest = "Highest"
@@ -14,3 +15,6 @@ class DisplayMovies(BaseModel):
     name: str
     rating: Optional[float] | None = None
     release: Optional[datetime] | None = None
+
+class DisplayUsers(BaseModel):
+    rate_entries_user: list[RatingRead] = []
