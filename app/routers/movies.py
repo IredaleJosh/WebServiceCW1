@@ -17,6 +17,14 @@ def create_movie(movie: MovieCreate, db : Session = Depends(get_db)):
     db.refresh(new_movie)
     return new_movie
 
+# Search For Movies Names and list them
+@router.get("/search")
+def search_movies(query: str, db: Session = Depends(get_db)):
+    results = db.query(Movie).filter(Movie.name.ilike(f"%{query}%")).all()
+    if not results:
+        return {"Message" : f"No Movies with {query}, try again"}
+    return results
+
 # Overview of the Movie - Shows Ratings
 @router.get("/{movie_id}", response_model=MovieRead)
 def read_movie(movie_id: int, db: Session = Depends(get_db)):
@@ -64,19 +72,3 @@ def delete_movie(movie_id: int, db: Session = Depends(get_db)):
     return {"Message : Deleted Movie"}
 
 # Top Rated Movies Based On Average
-@router.get("/top-rated")
-def average(movie_id: int, db: Session = Depends(get_db)):
-    ratings = db.query(Rating).filter(Rating.movies_id == movie_id).all()
-    if not ratings:
-        return {"Message : No Ratings Available"}
-    average=0
-    count=0
-    for r in ratings:
-        average += r.rating
-        count+=1
-    average /= count
-    return {"Average Ratings" : average}
-
-# Search For Movies
-
-# View al
