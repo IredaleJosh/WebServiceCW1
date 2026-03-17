@@ -34,12 +34,14 @@ def get_user(username: str, db : Session):
         raise HTTPException(status_code=404, detail="User not Found")
     return user
 
+
 # Security Functions - Generates Signed JWT + Expire Time
 def create_access_token(data: dict, expires : int = ACCESS_TOKEN_EXPIRE_MINUTES):
     to_encode = data.copy()
     expire = datetime.now(timezone.utc) + timedelta(minutes=expires)
     to_encode.update({"exp" : expire})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+
 
 # Auto runs on protected routes
 # extract jwt token, verifies and checks expiry
@@ -56,10 +58,19 @@ async def get_curr_user(token : str = Depends(oauth2_scheme), db : Session = Dep
         raise HTTPException(status_code=404, detail="User not Found")
     return user
 
+# Check if Admin or not
+    # Calls current user and checks if the current user is the admin
+async def check_admin(curr_user : User = Depends(get_curr_user)):
+    if curr_user.admin == False:
+        raise HTTPException(status_code=403, detail="Admins Only")
+    return curr_user
+
+
 async def get_token_head(x_token: Annotated[str, Header()]):
     if x_token != "fake-super-secret-token":
         raise HTTPException(status_code=400, detail="X-Token header invalid")
-    
+
+
 async def get_query_token(token: str):
     if token != "jessica":
         raise HTTPException(status_code=400, detail="No Jessica token provided") 

@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float, Date, Table
+from sqlalchemy import Column, Integer, String, Float, Date, Table, Boolean
 from sqlalchemy import PrimaryKeyConstraint, ForeignKey, CheckConstraint
 from sqlalchemy.orm import relationship
 from app.database import Base
@@ -93,6 +93,7 @@ class User(Base):
     username = Column(String(30), unique=True)
     password = Column(String(30))
     email = Column(String(30))
+    admin = Column(Boolean, default=False)
 
     rate_entries_user = relationship("Rating", back_populates="user", passive_deletes=True)
     movie = relationship("Movie", secondary=users_movies, back_populates="favourites")
