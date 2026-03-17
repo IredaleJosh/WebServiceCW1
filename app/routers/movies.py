@@ -18,16 +18,6 @@ def create_movie(movie: MovieCreate, db : Session = Depends(get_db)):
     db.refresh(new_movie)
     return new_movie
 
-# Search For Movies Names and list them
-@router.get("/search")
-def search_movies_by_name(query: str, db: Session = Depends(get_db)):
-    results = db.query(Movie).filter(Movie.name.ilike(f"%{query}%")).all()
-    if not results:
-        return {"Message" : f"No Movies with {query}, try again"}
-    return results
-
-# Return top rated movies
-
 # Overview of the Movie - Shows Ratings
 @router.get("/{movie_id}", response_model=MovieRead)
 def read_movie(movie_id: int, db: Session = Depends(get_db)):
