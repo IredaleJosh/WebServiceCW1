@@ -14,7 +14,6 @@ router = APIRouter()
 # This uses the movies endpoint
 # It gets the current user
 # Creates a new review at the movie endpoint + the current user making the review
-
 @router.post("/movies/{movie_id}/ratings")
 def create_rating(movie_id : int, rating: RatingCreate, 
     db : Session = Depends(get_db), curr_user : User = Depends(get_curr_user)):
@@ -49,7 +48,7 @@ def update_rating(rating_id: int, rating_update: RatingUpdate, db: Session = Dep
     return rating
 
 # DELETE
-@router.delete("/{rating_id}", response_model=RatingDelete)
+@router.delete("/{rating_id}")
 def delete_movie(rating_id: int, db: Session = Depends(get_db)):
     rating = db.query(Rating).filter(Rating.id == rating_id).first()
     if not rating:
