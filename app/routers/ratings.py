@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.dependencies import get_curr_user
-from app.movie import Rating, User
+from app.model import Rating, User
 from app.schemas.ratings import RatingCreate, RatingUpdate, RatingDelete
 
 router = APIRouter(prefix="/ratings", tags=["Ratings"])

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.database import get_db
-from app.movie import Movie, Rating, User
+from app.model import Movie, User
 from app.dependencies import check_admin
 from app.schemas.movies import MovieCreate, MovieUpdate, MovieRead
 

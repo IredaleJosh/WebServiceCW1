@@ -3,13 +3,6 @@ from sqlalchemy import PrimaryKeyConstraint, ForeignKey, CheckConstraint
 from sqlalchemy.orm import relationship
 from app.database import Base
 
-# M:M - Movies and Genres
-movie_genre = Table(
-    "movie_genre",
-    Base.metadata,
-    Column("movie_id", Integer, ForeignKey("Movies.id"), primary_key=True),
-    Column("genre_id", Integer, ForeignKey("Genres.id"), primary_key=True)
-)
 # M:M - Users and Movies make favourites
 users_movies = Table(
     "users_movies",
@@ -17,22 +10,6 @@ users_movies = Table(
     Column("user_id", Integer, ForeignKey("Users.id"), primary_key=True),
     Column("movie_id", Integer, ForeignKey("Movies.id"), primary_key=True)
 )
-
-# M:M - Movies and Actors
-    # Multiple fields like character name and importance
-    # this way lets us access the datafields in the API
-class Cast(Base):
-    __tablename__ = "Casts"
-    id = Column(Integer, primary_key=True, index=True)
-    movies_id = Column(Integer, ForeignKey("Movies.id", ondelete="CASCADE"))
-    actors_id = Column(Integer, ForeignKey("Actors.id", ondelete="CASCADE"))
-
-    character = Column(String(30))
-    importance = Column(Integer) # Whether they star or play supporting role
-    director = Column(String(50)) # just have field for director here 
-
-    movie = relationship("Movie", back_populates="cast_entries_movie")
-    actor = relationship("Actor",back_populates="cast_entries_actor")
 
 # M:M - Users and Movies
     # Extra fields for ratings and reviews
@@ -60,33 +37,14 @@ class Movie(Base):
     runtime = Column(Integer) # in minutes, so whole numbers
     budget = Column(Float) # 2dp
     revenue = Column(Float) # 2dp
+    genre = Column(String)
 
     # relationships - simple for now
-    genre = relationship("Genre", secondary=movie_genre, back_populates="movie")
     favourites = relationship("User", secondary=users_movies, back_populates="movie")
     cast_entries_movie = relationship("Cast", back_populates="movie", passive_deletes=True)
     rate_entries_movie = relationship("Rating", back_populates="movie", passive_deletes=True)
 
-# Class for storing genre
-# Movies can have MANY genres
-# Genres can have MANY movies
-class Genre(Base):
-    __tablename__ = "Genres"
-    id = Column(Integer, primary_key=True)
-    name = Column(String(30), index=True)
-
-    movie = relationship("Movie", secondary=movie_genre, back_populates="genre")
-
-# Class for Storing Actors
-# Movies can have MANY Actors
-# Actors can be in MANY Movies
-class Actor(Base):
-    __tablename__ = "Actors"
-    id = Column(Integer, primary_key=True)
-    name = Column(String(30), index=True)
-    
-    cast_entries_actor = relationship("Cast", back_populates="actor", passive_deletes=True)
-
+# Stores the Users 
 class User(Base):
     __tablename__ = "Users"
     id = Column(Integer, primary_key=True, index=True)

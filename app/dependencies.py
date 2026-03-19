@@ -10,7 +10,7 @@ from pwdlib import PasswordHash
 from pydantic import BaseModel
 from datetime import datetime, timedelta, timezone
 
-from app.movie import User
+from app.model import User
 from app.schemas.users import UserBase
 from app.database import get_db
 

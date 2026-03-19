@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func
 
 from app.database import get_db
-from app.movie import Movie, Rating, User
+from app.model import Movie, Rating, User
 from app.dependencies import check_admin
 from app.schemas.analytics import SortRatings, DisplayMovies, DisplayUsers
 
@@ -39,10 +39,6 @@ def sort_movies(sort: SortRatings, db: Session = Depends(get_db)):
         year_movies = [{"id": m.id, "name": m.name, "release": m.release} for m in year_movies]
         return year_movies
 
-# rate_movies = db.query(Movie, func.avg(Rating.rating).label("avg_rating")).join(
-#     Rating, Rating.movies_id == Movie.id).group_by(
-#     Movie.id)
-
 # Average Rating for a Movie
 @router.get("/filter/average")
 def average(movie_name: str, db: Session = Depends(get_db)):
@@ -69,7 +65,7 @@ def search_movies_by_name(query: str, db: Session = Depends(get_db)):
         return {"Message" : f"No Movies with {query}, try again"}
     return results
 
-# Sort by Genres by popularity
+# Filter Movies by Genres
 @router.get("/filter/genre")
 def search_genre(genre: str, db: Session = Depends(get_db)):
     genres = db.query(Movie).filter(Movie.name.ilike(f"%{genre}%")).all()

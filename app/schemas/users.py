@@ -5,7 +5,7 @@ from app.schemas.ratings import RatingRead
 class UserBase(BaseModel):
     id : int
     username : str
-    email : str
+    email : EmailStr
 
 class UserCreate(BaseModel):
     username: str = Field(..., min_length=3, max_length=20)
