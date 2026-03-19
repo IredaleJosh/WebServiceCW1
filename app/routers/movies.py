@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.database import get_db
-from app.model import Movie, User
+from app.model import Movie, User, Genre
 from app.dependencies import check_admin
 from app.schemas.movies import MovieCreate, MovieUpdate, MovieRead
 
@@ -9,9 +9,16 @@ router = APIRouter(prefix="/movies", tags=["Movies"])
 
 # CRUD
 # CREATE - ADMIN ONLY Create a new movie
-@router.post("/create")
+@router.post("/create", response_model=MovieRead)
 def create_movie(movie: MovieCreate, db : Session = Depends(get_db)):
-    new_movie = Movie(**movie.dict())
+    genres = db.query(Genre).filter(Genre.name.in_(movie.genres)).all()
+    if not genres:
+        raise HTTPException(400, "Genres aren't Valid")
+    new_movie = Movie(
+        name=movie.name, summary=movie.summary, release=movie.release, runtime=movie.runtime,
+        budget=movie.budget, revenue=movie.revenue
+    )
+    new_movie.genre = genres
     db.add(new_movie)
     db.commit()
     db.refresh(new_movie)

@@ -3,6 +3,13 @@ from sqlalchemy import PrimaryKeyConstraint, ForeignKey, CheckConstraint
 from sqlalchemy.orm import relationship
 from app.database import Base
 
+# M:M - Movies and Genres
+movie_genre = Table(
+    "movie_genre",
+    Base.metadata,
+    Column("movie_id", Integer, ForeignKey("Movies.id"), primary_key=True),
+    Column("genre_id", Integer, ForeignKey("Genres.id"), primary_key=True)
+)
 # M:M - Users and Movies make favourites
 users_movies = Table(
     "users_movies",
@@ -39,12 +46,23 @@ class Movie(Base):
     revenue = Column(Float) # 2dp
     genre = Column(String)
 
-    # relationships - simple for now
+    # relationships
+    genre = relationship("Genre", secondary=movie_genre, back_populates="movie")
     favourites = relationship("User", secondary=users_movies, back_populates="movie")
-    cast_entries_movie = relationship("Cast", back_populates="movie", passive_deletes=True)
     rate_entries_movie = relationship("Rating", back_populates="movie", passive_deletes=True)
 
-# Stores the Users 
+# Class for storing genre
+# Movies can have MANY genres
+# Genres can have MANY movies
+class Genre(Base):
+    __tablename__ = "Genres"
+    id = Column(Integer, primary_key=True)
+    name = Column(String(30), index=True)
+
+    # relationship
+    movie = relationship("Movie", secondary=movie_genre, back_populates="genre")
+
+# Stores User details
 class User(Base):
     __tablename__ = "Users"
     id = Column(Integer, primary_key=True, index=True)

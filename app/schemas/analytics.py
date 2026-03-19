@@ -10,6 +10,12 @@ class SortRatings(str, Enum):
     recent = "Recent Years"
     latest = "Latest Years"
 
+class FindGenre(str, Enum):
+    Action = "Action"
+    Horror = "Horror"
+    Comedy = "Comedy"
+    SciFi = "Sci-Fi"
+
 class DisplayMovies(BaseModel):
     id: int
     name: str

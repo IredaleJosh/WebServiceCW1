@@ -3,9 +3,9 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func
 
 from app.database import get_db
-from app.model import Movie, Rating, User
+from app.model import Movie, Rating, User, Genre
 from app.dependencies import check_admin
-from app.schemas.analytics import SortRatings, DisplayMovies, DisplayUsers
+from app.schemas.analytics import SortRatings, DisplayMovies, DisplayUsers, FindGenre
 
 router = APIRouter(prefix="/analytics", tags=["Analytics"])
 
@@ -66,9 +66,13 @@ def search_movies_by_name(query: str, db: Session = Depends(get_db)):
     return results
 
 # Filter Movies by Genres
+    # Choose a genre from the list
+    # find movies
 @router.get("/filter/genre")
-def search_genre(genre: str, db: Session = Depends(get_db)):
-    genres = db.query(Movie).filter(Movie.name.ilike(f"%{genre}%")).all()
+def search_genre(genreQuery: FindGenre, db: Session = Depends(get_db)):
+    genres = db.query(Movie).join(Movie.genre).filter(Genre.name == genreQuery.value).all()
+    if not genres:
+        raise HTTPException(404, f"No Movies found for {genreQuery.value}, try again")
     return genres
 
 # Admin

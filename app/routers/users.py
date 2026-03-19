@@ -10,7 +10,6 @@ from app.schemas.users import UserCreate, UserUpdate, Token
 router = APIRouter(prefix="/users", tags=["Users"])
 
 # CRUD
-
 # CREATE - Register an email, name and password
 @router.post("/register")
 def register(user: UserCreate, db : Session = Depends(get_db)):
