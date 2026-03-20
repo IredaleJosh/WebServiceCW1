@@ -5,7 +5,7 @@ from sqlalchemy import func
 from app.database import get_db
 from app.model import Movie, Rating, User, Genre
 from app.dependencies import check_admin
-from app.schemas.analytics import SortRatings, DisplayMovies, DisplayUsers, FindGenre
+from app.schemas.analytics import SortRatings, DisplayMovies, DisplayUsers, FindGenre, DisplayMovieGenre
 
 router = APIRouter(prefix="/analytics", tags=["Analytics"])
 
@@ -66,14 +66,12 @@ def search_movies_by_name(query: str, db: Session = Depends(get_db)):
     return results
 
 # Filter Movies by Genres
-    # Choose a genre from the list
-    # find movies
-@router.get("/filter/genre")
+@router.get("/filter/genre", response_model=list[DisplayMovieGenre])
 def search_genre(genreQuery: FindGenre, db: Session = Depends(get_db)):
-    genres = db.query(Movie).join(Movie.genre).filter(Genre.name == genreQuery.value).all()
-    if not genres:
+    movies = db.query(Movie).join(Movie.genre).filter(Genre.name == genreQuery.value).all()
+    if not movies:
         raise HTTPException(404, f"No Movies found for {genreQuery.value}, try again")
-    return genres
+    return [{"id": m.id, "name": m.name, "summary": m.summary, "runtime": m.runtime} for m in movies]
 
 # Admin
 # Most active users via number of ratings they did

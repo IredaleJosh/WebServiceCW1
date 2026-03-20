@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String, Float, Date, Table, Boolean
-from sqlalchemy import PrimaryKeyConstraint, ForeignKey, CheckConstraint
+from sqlalchemy import ForeignKey, CheckConstraint
 from sqlalchemy.orm import relationship
 from app.database import Base
 
@@ -9,13 +9,6 @@ movie_genre = Table(
     Base.metadata,
     Column("movie_id", Integer, ForeignKey("Movies.id"), primary_key=True),
     Column("genre_id", Integer, ForeignKey("Genres.id"), primary_key=True)
-)
-# M:M - Users and Movies make favourites
-users_movies = Table(
-    "users_movies",
-    Base.metadata,
-    Column("user_id", Integer, ForeignKey("Users.id"), primary_key=True),
-    Column("movie_id", Integer, ForeignKey("Movies.id"), primary_key=True)
 )
 
 # M:M - Users and Movies
@@ -37,7 +30,7 @@ class Movie(Base):
     __tablename__ = "Movies"
     # Identifier for this model
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, index=True)
+    name = Column(String, index=True, unique=True)
     # add validation
     summary = Column(String(200))
     release = Column(Date)
@@ -47,8 +40,7 @@ class Movie(Base):
     genre = Column(String)
 
     # relationships
-    genre = relationship("Genre", secondary=movie_genre, back_populates="movie")
-    favourites = relationship("User", secondary=users_movies, back_populates="movie")
+    genre = relationship("Genre", secondary=movie_genre, back_populates="movie", passive_deletes=True)
     rate_entries_movie = relationship("Rating", back_populates="movie", passive_deletes=True)
 
 # Class for storing genre
@@ -60,7 +52,7 @@ class Genre(Base):
     name = Column(String(30), index=True)
 
     # relationship
-    movie = relationship("Movie", secondary=movie_genre, back_populates="genre")
+    movie = relationship("Movie", secondary=movie_genre, back_populates="genre", passive_deletes=True)
 
 # Stores User details
 class User(Base):
@@ -68,8 +60,7 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String(30), unique=True)
     password = Column(String(30))
-    email = Column(String(30))
+    email = Column(String(30), unique=True)
     admin = Column(Boolean, default=False)
 
     rate_entries_user = relationship("Rating", back_populates="user", passive_deletes=True)
-    movie = relationship("Movie", secondary=users_movies, back_populates="favourites")

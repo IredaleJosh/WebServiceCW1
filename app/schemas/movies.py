@@ -1,6 +1,6 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, field_validator
 from typing import Optional
-from datetime import datetime
+from datetime import date
 from app.schemas.ratings import RatingRead
 
 # Genres
@@ -9,20 +9,30 @@ class GenreDisplay(BaseModel):
 
 # Create a Movie
 class MovieCreate(BaseModel):
-    name: str
-    summary: str
-    release: datetime
+    name: str = Field(..., min_length=1, max_length=30)
+    summary: str = Field()
+    release: date
     runtime: int
     budget: float
     revenue: float
     genres: list[str]
+
+    # Validates its not a future date
+    @field_validator("release")
+    def current(cls, time):
+        if time > date.today():
+            raise ValueError("Cannot be a future date")
+        return time
+    
+    # Validates its a unique movie name
+    
 
 # How Movies are Displayed
 class MovieRead(BaseModel):
     id: int
     name: str
     summary: str
-    release: datetime
+    release: date
     runtime: int
     budget: float
     revenue: float
@@ -33,7 +43,7 @@ class MovieRead(BaseModel):
 class MovieUpdate(BaseModel):
     name: Optional[str] = None
     summary: Optional[str] = None
-    release: Optional[datetime] = None
+    release: Optional[date] = None
     runtime: Optional[int] = None
     budget: Optional[float] = None
     revenue: Optional[float] = None

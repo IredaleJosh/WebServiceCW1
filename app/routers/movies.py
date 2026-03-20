@@ -11,20 +11,23 @@ router = APIRouter(prefix="/movies", tags=["Movies"])
 # CREATE - ADMIN ONLY Create a new movie
 @router.post("/create", response_model=MovieRead)
 def create_movie(movie: MovieCreate, db : Session = Depends(get_db)):
+    # Check if genres available
     genres = db.query(Genre).filter(Genre.name.in_(movie.genres)).all()
     if not genres:
         raise HTTPException(400, "Genres aren't Valid")
+    # make movie
     new_movie = Movie(
         name=movie.name, summary=movie.summary, release=movie.release, runtime=movie.runtime,
         budget=movie.budget, revenue=movie.revenue
     )
+    # using names, as easier for testing and UI
     new_movie.genre = genres
     db.add(new_movie)
     db.commit()
     db.refresh(new_movie)
     return new_movie
 
-# Overview of the Movie inc. ratings
+# Overview of the Movie inc. ratings and genres
 @router.get("/{movie_id}/overview", response_model=MovieRead)
 def read_movie(movie_id: int, db: Session = Depends(get_db)):
     movie = db.query(Movie).filter(Movie.id == movie_id).first()
