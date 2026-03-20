@@ -11,7 +11,8 @@ session_local = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 # parent class for all models
     # Base registers model, stores metadata and allows sqlalchemy to auto create tables
 Base = declarative_base()
-Base.metadata.create_all(bind=engine)
+# Run once
+# Base.metadata.create_all(bind=engine)
 
 # To use the database in the routers
 def get_db():

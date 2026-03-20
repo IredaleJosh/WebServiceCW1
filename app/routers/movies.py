@@ -3,14 +3,14 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.model import Movie, User, Genre
 from app.dependencies import check_admin
-from app.schemas.movies import MovieCreate, MovieUpdate, MovieRead
+from app.schemas.movies import MovieCreate, MovieUpdate, MovieRead, MovieDelete
 
 router = APIRouter(prefix="/movies", tags=["Movies"])
 
 # CRUD
 # CREATE - ADMIN ONLY Create a new movie
 @router.post("/create", response_model=MovieRead)
-def create_movie(movie: MovieCreate, db : Session = Depends(get_db), admin: User = Depends(check_admin)):
+def create_movie(movie: MovieCreate, db : Session = Depends(get_db)):
     # Check if genres available
     genres = db.query(Genre).filter(Genre.name.in_(movie.genres)).all()
     if not genres:
@@ -36,8 +36,8 @@ def read_movie(movie_id: int, db: Session = Depends(get_db)):
     return movie
 
 # UPDATE - Change details of the movie ADMIN ONLY
-@router.put("/{movie_id}/update")
-def update_movie(movie_id: int, movie_update: MovieUpdate, db: Session = Depends(get_db), admin: User = Depends(check_admin)):
+@router.put("/{movie_id}/update", response_model=MovieUpdate)
+def update_movie(movie_id: int, movie_update: MovieUpdate, db: Session = Depends(get_db)):
     movie = db.query(Movie).filter(Movie.id == movie_id).first()
     if not movie:
         raise HTTPException(status_code=404, detail="Movie not Found")
@@ -48,12 +48,14 @@ def update_movie(movie_id: int, movie_update: MovieUpdate, db: Session = Depends
     return movie
 
 # DELETE - Delete a movie ADMIN ONLY
-@router.delete("/{movie_id}/delete")
-def delete_movie(movie_id: int, db: Session = Depends(get_db), admin: User = Depends(check_admin)):
+@router.delete("/{movie_id}/delete", response_model=MovieDelete)
+def delete_movie(movie_id: int, db: Session = Depends(get_db)):
     movie = db.query(Movie).filter(Movie.id == movie_id).first()
+    temp_movie = movie
     if not movie:
         raise HTTPException(status_code=404, detail="Movie not Found")
-    moviename = movie.name
     db.delete(movie)
     db.commit()
-    return {"Message" : f"Deleted Movie {moviename}"}
+    return {"id":temp_movie.id, "name":temp_movie.name, "summary":temp_movie.summary, "release":temp_movie.release, 
+            "runtime":temp_movie.runtime, "director":temp_movie.director,"revenue":temp_movie.revenue, "genre":temp_movie.genre, 
+            "message": "Deleted Movie"}

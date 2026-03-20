@@ -29,5 +29,5 @@ class RatingUpdate(RatingBase):
     review: str | None = None
 
 # For Deleting the reviews, we delete the row and the user and movie id linked to it
-class RatingDelete(RatingBase):
-    pass
+class RatingDelete(RatingDisplay):
+    message: str

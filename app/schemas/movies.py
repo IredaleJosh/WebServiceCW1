@@ -45,3 +45,7 @@ class MovieUpdate(BaseModel):
     director: Optional[str] = None
     revenue: Optional[float] = None
     genres: list[str]
+
+class MovieDelete(MovieRead):
+    message: str
+    rate_entries_movie: Optional[list[RatingRead]] = None

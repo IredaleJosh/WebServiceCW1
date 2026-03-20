@@ -43,11 +43,20 @@ class FindGenre(str, Enum):
     Sport = "Sport"
 
 # Show users name, summary, length, reviews
-class DisplayMovieGenre(BaseModel):
+class DisplayMovieShort(BaseModel):
     id: int
     name: str
     summary: str
     runtime: int
+
+# Show users name, summary, length, reviews
+class DisplayMovieAvg(DisplayMovieShort):
+    average: int
+
+class DisplayReviewNumber(BaseModel):
+    id: int
+    username: str
+    review_count: int
 
 class DisplayUsers(BaseModel):
     rate_entries_user: list[RatingRead] = []

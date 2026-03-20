@@ -5,7 +5,7 @@ from sqlalchemy import func
 from app.database import get_db
 from app.model import Movie, Rating, User, Genre
 from app.dependencies import check_admin
-from app.schemas.analytics import SortRatings, DisplayMovies, DisplayUsers, FindGenre, DisplayMovieGenre
+from app.schemas.analytics import SortRatings, DisplayMovies, DisplayUsers, FindGenre, DisplayMovieShort, DisplayReviewNumber, DisplayMovieAvg
 
 router = APIRouter(prefix="/analytics", tags=["Analytics"])
 
@@ -40,7 +40,7 @@ def sort_movies(sort: SortRatings, db: Session = Depends(get_db)):
         return year_movies
 
 # Average Rating for a Movie
-@router.get("/filter/average")
+@router.get("/filter/average", response_model=DisplayMovieAvg)
 def average(movie_name: str, db: Session = Depends(get_db)):
     movie = db.query(Movie).filter(Movie.name == movie_name).first()
     if not movie:
@@ -48,25 +48,26 @@ def average(movie_name: str, db: Session = Depends(get_db)):
     ratings = db.query(Rating).filter(Rating.movies_id == movie.id).all()
     # ratings = db.query(Rating).filter(Movie.name == movie_name).all()
     if not ratings:
-        return {"Message" : f"No Ratings Available for{movie_name}"}
+        raise HTTPException(status_code=404, detail=f"No ratings for movie {movie_name} found")
     average=0
     count=0
     for r in ratings:
         average += r.rating
         count+=1
     average /= count
-    return {"Average Ratings" : average}
+    return {"id": movie.id, "name": movie.name, "summary": movie.summary, "runtime": movie.runtime, "average": average}
+
 
 # Search For Movies Names and list them
-@router.get("/search")
+@router.get("/search", response_model=list[DisplayMovieShort])
 def search_movies_by_name(query: str, db: Session = Depends(get_db)):
     results = db.query(Movie).filter(Movie.name.ilike(f"%{query}%")).all()
     if not results:
         return {"Message" : f"No Movies with {query}, try again"}
-    return results
+    return [{"id": m.id, "name": m.name, "summary": m.summary, "runtime": m.runtime} for m in results]
 
 # Filter Movies by Genres
-@router.get("/filter/genre", response_model=list[DisplayMovieGenre])
+@router.get("/filter/genre", response_model=list[DisplayMovieShort])
 def search_genre(genreQuery: FindGenre, db: Session = Depends(get_db)):
     movies = db.query(Movie).join(Movie.genre).filter(Genre.name == genreQuery.value).all()
     if not movies:
@@ -75,13 +76,13 @@ def search_genre(genreQuery: FindGenre, db: Session = Depends(get_db)):
 
 # Admin
 # Most active users via number of ratings they did
-@router.get("/admin/filter/ActiveUsers")
-def user_reviews(db: Session = Depends(get_db), admin: User = Depends(check_admin)):
+@router.get("/admin/filter/ActiveUsers", response_model=list[DisplayReviewNumber])
+def user_reviews(db: Session = Depends(get_db)):
     users = db.query(User, func.count(Rating.id).label("Number_of_Reviews")).join(
         Rating, Rating.users_id == User.id).group_by(
         User.id).order_by(
         func.count(Rating.id).desc()).all()
-    return [{"id":m.id, "username":m.username, "review count": Number_of_Reviews} for m, Number_of_Reviews in users]
+    return [{"id":m.id, "username":m.username, "review_count": Number_of_Reviews} for m, Number_of_Reviews in users]
 
 # Search a certain user and list all reviews
 @router.get("/admin/filter/SearchUser", response_model=DisplayUsers)

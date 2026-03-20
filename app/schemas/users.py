@@ -19,11 +19,15 @@ class DisplayUsername(BaseModel):
     username: str
     rate_entries_user: list[RatingRead] = []
 
-# Update username, 
+# Update username, mus be 
 class UserUpdate(BaseModel):
     username: Optional[str] = Field(min_length=3, max_length=20)
     password: Optional[str] = Field(min_length=6, max_length=20)
     email: Optional[EmailStr] = None
+
+# Delete User
+class UserDelete(UserBase):
+    Message: str
 
 # Shows users access token
 class Token(BaseModel):

@@ -7,8 +7,8 @@ from app.database import Base
 movie_genre = Table(
     "movie_genre",
     Base.metadata,
-    Column("movie_id", Integer, ForeignKey("Movies.id"), primary_key=True),
-    Column("genre_id", Integer, ForeignKey("Genres.id"), primary_key=True)
+    Column("movie_id", Integer, ForeignKey("Movies.id", ondelete="CASCADE"), primary_key=True),
+    Column("genre_id", Integer, ForeignKey("Genres.id", ondelete="CASCADE"), primary_key=True)
 )
 
 # M:M - Users and Movies
@@ -40,7 +40,7 @@ class Movie(Base):
     genre = Column(String)
 
     # relationships
-    genre = relationship("Genre", secondary=movie_genre, back_populates="movie", cascade="all")
+    genre = relationship("Genre", secondary=movie_genre, back_populates="movie")
     rate_entries_movie = relationship("Rating", back_populates="movie", passive_deletes=True)
 
 # Class for storing genre
@@ -52,7 +52,7 @@ class Genre(Base):
     name = Column(String(30), index=True)
 
     # relationship
-    movie = relationship("Movie", secondary=movie_genre, back_populates="genre", cascade="all")
+    movie = relationship("Movie", secondary=movie_genre, back_populates="genre")
 
 # Stores User details
 class User(Base):

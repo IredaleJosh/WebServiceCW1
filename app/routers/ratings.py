@@ -51,11 +51,15 @@ def update_rating(rating_id: int, rating_update: RatingUpdate, db: Session = Dep
             "rating":rating.rating, "review":rating.review}
 
 # DELETE - Users can remove their reviews
-@router.delete("/{rating_id}")
-def delete_rating(rating_id: int, db: Session = Depends(get_db)):
+@router.delete("/{rating_id}", response_model=RatingDelete)
+def delete_rating(rating_id: int, db: Session = Depends(get_db),
+                    curr_user : User = Depends(get_curr_user)):
     rating = db.query(Rating).filter(Rating.id == rating_id).first()
+    temp_rating=rating
+    movie_name = db.query(Movie).filter(Movie.id == rating.movies_id).first()
     if not rating:
         raise HTTPException(status_code=404, detail="Rating not Found")
     db.delete(rating)
     db.commit()
-    return {"Message : Deleted Rating"}
+    return {"id":temp_rating.id, "users_id":temp_rating.users_id, "movies_id":temp_rating.movies_id, "name": movie_name.name,
+            "rating":temp_rating.rating, "review":temp_rating.review, "message": "Deleted Rating"}
