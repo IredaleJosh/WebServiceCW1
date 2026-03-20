@@ -23,6 +23,20 @@ class MovieCreate(BaseModel):
         if time > datetime.now().year:
             raise ValueError("Cannot be a future date")
         return time
+
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "name": "Movie name",
+                "summary": "350 character descriptor",
+                "name": "Year of release",
+                "runtime": "runtime in minutes",
+                "director": "first and last name of director",
+                "revenue": "total revenue to the pound",
+                "genres": "list of genres (must be a valid genre)",
+            }
+        }
+    }
     
 # How Movies are Displayed
 class MovieRead(BaseModel):

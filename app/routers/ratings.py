@@ -9,12 +9,20 @@ from app.schemas.ratings import RatingDisplay, RatingCreate, RatingUpdate, Ratin
 router = APIRouter(prefix="/ratings", tags=["Ratings"])
 
 # CREATE - Current user creates a review and stores it to their account for said movie
-@router.post("/{movie_id}", response_model=RatingDisplay)
+@router.post("/{movie_id}", 
+            response_model=RatingDisplay,
+            status_code=200,
+            description="Current user creates a review and stores it to their account for said movie",
+            responses={
+                401: {"description":"Not Authorised"},
+                404: {"description":"Already Reviewed Movie"},
+                422: {"description":"Validation Error"}
+            })
 def create_rating(movie_id : int, rating: RatingCreate, 
     db : Session = Depends(get_db), curr_user : User = Depends(get_curr_user)):
     check_review = db.query(Rating).filter(Rating.users_id == curr_user.id, Rating.movies_id == movie_id).first()
     if check_review:
-        raise HTTPException(status_code=400, detail=f"Already Reviewd Movie")
+        raise HTTPException(status_code=400, detail=f"Already Reviewed Movie")
     new_rating = Rating(**rating.dict(),
         users_id=curr_user.id,
         movies_id=movie_id)
@@ -26,7 +34,14 @@ def create_rating(movie_id : int, rating: RatingCreate,
             "rating":new_rating.rating, "review":new_rating.review}
 
 # READ - Search for certain reviews via its id and the user who made it
-@router.get("/{rating_id}", response_model=RatingDisplay)
+@router.get("/{rating_id}",
+            response_model=RatingDisplay,
+            status_code=200,
+            description="Search for certain reviews via its id and the user who made it",
+            responses={
+                 404: {"description":"Rating not Found"},
+                 422: {"description":"Validation Error"}
+            })
 def read_rating(rating_id: int, db: Session = Depends(get_db)):
     rating = db.query(Rating).filter(Rating.id == rating_id).first()
     if not rating:
@@ -36,7 +51,15 @@ def read_rating(rating_id: int, db: Session = Depends(get_db)):
             "rating":rating.rating, "review":rating.review}
 
 # UPDATE - User can update their reviews at certain id
-@router.put("/{rating_id}", response_model=RatingDisplay)
+@router.put("/{rating_id}",
+            response_model=RatingDisplay,
+            status_code=200,
+            description="User can update their reviews for certain movies",
+            responses={
+                401: {"description":"Not Authorised"},
+                404: {"description":"Rating not Found"},
+                422: {"description":"Validation Error"}
+            })
 def update_rating(rating_id: int, rating_update: RatingUpdate, db: Session = Depends(get_db), 
                     curr_user : User = Depends(get_curr_user)):
     rating = db.query(Rating).filter(Rating.id == rating_id).first()
@@ -51,7 +74,15 @@ def update_rating(rating_id: int, rating_update: RatingUpdate, db: Session = Dep
             "rating":rating.rating, "review":rating.review}
 
 # DELETE - Users can remove their reviews
-@router.delete("/{rating_id}", response_model=RatingDelete)
+@router.delete("/{rating_id}",
+            response_model=RatingDelete,
+            status_code=200,
+            description="Users can remove their reviews",
+            responses={
+                401: {"description":"Not Authorised"},
+                404: {"description":"Rating not Found"},
+                422: {"description":"Validation Error"}
+            })
 def delete_rating(rating_id: int, db: Session = Depends(get_db),
                     curr_user : User = Depends(get_curr_user)):
     rating = db.query(Rating).filter(Rating.id == rating_id).first()

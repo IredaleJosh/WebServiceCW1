@@ -9,8 +9,16 @@ router = APIRouter(prefix="/movies", tags=["Movies"])
 
 # CRUD
 # CREATE - ADMIN ONLY Create a new movie
-@router.post("/create", response_model=MovieRead)
-def create_movie(movie: MovieCreate, db : Session = Depends(get_db)):
+@router.post("/create", 
+            response_model=MovieRead,
+            status_code=200, 
+            description="Admins create a new movie",
+            responses={
+                401: {"description":"Not Authorised"},
+                400: {"description":"Genres aren't Valid"},
+                422: {"description":"Validation Error"}
+            })
+def create_movie(movie: MovieCreate, db : Session = Depends(get_db), check_admin : Session = Depends(check_admin)):
     # Check if genres available
     genres = db.query(Genre).filter(Genre.name.in_(movie.genres)).all()
     if not genres:
@@ -28,7 +36,14 @@ def create_movie(movie: MovieCreate, db : Session = Depends(get_db)):
     return new_movie
 
 # Overview of the Movie inc. ratings and genres
-@router.get("/{movie_id}/overview", response_model=MovieRead)
+@router.get("/{movie_id}/overview", 
+            response_model=MovieRead,
+            status_code=200, 
+            description="Overview of the Movie including their ratings and genres",
+            responses={
+                 404: {"description":"Movie not Found"},
+                 422: {"description":"Validation Error"}
+            })
 def read_movie(movie_id: int, db: Session = Depends(get_db)):
     movie = db.query(Movie).filter(Movie.id == movie_id).first()
     if not movie:
@@ -36,8 +51,16 @@ def read_movie(movie_id: int, db: Session = Depends(get_db)):
     return movie
 
 # UPDATE - Change details of the movie ADMIN ONLY
-@router.put("/{movie_id}/update", response_model=MovieUpdate)
-def update_movie(movie_id: int, movie_update: MovieUpdate, db: Session = Depends(get_db)):
+@router.put("/{movie_id}/update", 
+            response_model=MovieUpdate,
+            status_code=200,
+            description="Admins can change the details of a movie",
+            responses={
+                401: {"description":"Not Authorised"},
+                404: {"description":"Movie not Found"},
+                422: {"description":"Validation Error"}
+            })
+def update_movie(movie_id: int, movie_update: MovieUpdate, db: Session = Depends(get_db), check_admin : Session = Depends(check_admin)):
     movie = db.query(Movie).filter(Movie.id == movie_id).first()
     if not movie:
         raise HTTPException(status_code=404, detail="Movie not Found")
@@ -48,8 +71,16 @@ def update_movie(movie_id: int, movie_update: MovieUpdate, db: Session = Depends
     return movie
 
 # DELETE - Delete a movie ADMIN ONLY
-@router.delete("/{movie_id}/delete", response_model=MovieDelete)
-def delete_movie(movie_id: int, db: Session = Depends(get_db)):
+@router.delete("/{movie_id}/delete", 
+            response_model=MovieDelete,
+            status_code=200, 
+            description="Admins can delete a movie and their ratings, but not their genres",
+            responses={
+                401: {"description":"Not Authorised"},
+                404: {"description":"Movie not Found"},
+                422: {"description":"Validation Error"}
+            })               
+def delete_movie(movie_id: int, db: Session = Depends(get_db), check_admin : Session = Depends(check_admin)):
     movie = db.query(Movie).filter(Movie.id == movie_id).first()
     temp_movie = movie
     if not movie:
