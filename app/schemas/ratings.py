@@ -6,6 +6,15 @@ class RatingRead(BaseModel):
     rating: int
     review: str
 
+# How a new rating is displayed to user
+class RatingDisplay(BaseModel):
+    id: int
+    users_id: int
+    movies_id: int
+    name: str
+    rating: int = Field(..., ge=0, le=5)
+    review: str | None = None
+
 class RatingBase(BaseModel):
     rating: int = Field(..., ge=0, le=5)
     review: str | None = None

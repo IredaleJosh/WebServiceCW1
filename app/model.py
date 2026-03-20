@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float, Date, Table, Boolean
+from sqlalchemy import Column, Integer, String, Table, Boolean
 from sqlalchemy import ForeignKey, CheckConstraint
 from sqlalchemy.orm import relationship
 from app.database import Base
@@ -30,17 +30,17 @@ class Movie(Base):
     __tablename__ = "Movies"
     # Identifier for this model
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, index=True, unique=True)
+    name = Column(String, index=True)
     # add validation
-    summary = Column(String(200))
-    release = Column(Date)
+    summary = Column(String(350))
+    release = Column(Integer)
     runtime = Column(Integer) # in minutes, so whole numbers
-    budget = Column(Float) # 2dp
-    revenue = Column(Float) # 2dp
+    director = Column(String)
+    revenue = Column(Integer) # as it has commas
     genre = Column(String)
 
     # relationships
-    genre = relationship("Genre", secondary=movie_genre, back_populates="movie", passive_deletes=True)
+    genre = relationship("Genre", secondary=movie_genre, back_populates="movie", cascade="all")
     rate_entries_movie = relationship("Rating", back_populates="movie", passive_deletes=True)
 
 # Class for storing genre
@@ -52,7 +52,7 @@ class Genre(Base):
     name = Column(String(30), index=True)
 
     # relationship
-    movie = relationship("Movie", secondary=movie_genre, back_populates="genre", passive_deletes=True)
+    movie = relationship("Movie", secondary=movie_genre, back_populates="genre", cascade="all")
 
 # Stores User details
 class User(Base):

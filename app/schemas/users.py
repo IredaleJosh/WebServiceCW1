@@ -14,6 +14,7 @@ class UserCreate(BaseModel):
     password: str = Field(min_length=6, max_length=20)
     email: EmailStr
 
+# Shows thier username and all reviews
 class DisplayUsername(BaseModel):
     username: str
     rate_entries_user: list[RatingRead] = []

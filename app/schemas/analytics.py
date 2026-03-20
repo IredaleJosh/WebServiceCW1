@@ -16,14 +16,31 @@ class DisplayMovies(BaseModel):
     id: int
     name: str
     rating: Optional[float] | None = None
-    release: Optional[date] | None = None
+    release: Optional[int] | None = None
 
 # options to filter by genres - hardcode as genres are fixed
 class FindGenre(str, Enum):
+    Drama = "Drama"
+    Crime = "Crime"
     Action = "Action"
-    Horror = "Horror"
-    Comedy = "Comedy"
+    Adventure = "Adventure"
+    Biography = "Biography"
+    History = "History"
     SciFi = "Sci-Fi"
+    Romance = "Romance"
+    Western = "Western"
+    Fantasy = "Fantasy"
+    Comedy = "Comedy"
+    Thriller = "Thriller"
+    Animation = "Animation"
+    Family = "Family"
+    War = "War"
+    Mystery = "Mystery"
+    Music = "Music"
+    Horror = "Horror"
+    Musical = "Musical"
+    FilmNoir = "Film-Noir"
+    Sport = "Sport"
 
 # Show users name, summary, length, reviews
 class DisplayMovieGenre(BaseModel):

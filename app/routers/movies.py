@@ -10,7 +10,7 @@ router = APIRouter(prefix="/movies", tags=["Movies"])
 # CRUD
 # CREATE - ADMIN ONLY Create a new movie
 @router.post("/create", response_model=MovieRead)
-def create_movie(movie: MovieCreate, db : Session = Depends(get_db)):
+def create_movie(movie: MovieCreate, db : Session = Depends(get_db), admin: User = Depends(check_admin)):
     # Check if genres available
     genres = db.query(Genre).filter(Genre.name.in_(movie.genres)).all()
     if not genres:
@@ -18,7 +18,7 @@ def create_movie(movie: MovieCreate, db : Session = Depends(get_db)):
     # make movie
     new_movie = Movie(
         name=movie.name, summary=movie.summary, release=movie.release, runtime=movie.runtime,
-        budget=movie.budget, revenue=movie.revenue
+        director=movie.director, revenue=movie.revenue
     )
     # using names, as easier for testing and UI
     new_movie.genre = genres
