@@ -1,5 +1,4 @@
 ## Overview of the API
-
 This API allows users to view movies for their runtime, revenue, genre, director and summary as well as rate them by giving a score from 1-5 and a short text review. Users can also search for certain movies, sort them by highets and lowest ranked movies or recent and latest movies. They can also search by genere too. Can login as admins to create, update and delete movies and view users details and review counts for each user. Users must authorise to either perform admin actions if they are admins or to make ratings and change their email or password.
 
 ## How to Install Dependencies?
@@ -37,12 +36,9 @@ This shows the admin and the movies
 
 ## Run project
 
-FastAPI was used
-run "fastapi dev" in the terminal, ensuring app. are placed in the "__init__.py" and "models.py" files like
-    app.database and app.model for __init__
-    app.database for models
-
-terminal will show links to the docs and the website
+FastAPI and uvicorn was used
+1. run "uvicorn main:app --reload" to connect to the server
+2. the SwaggerUI is at "http://127.0.0.1:8000/docs"
 
 ## Register and Authotising
 
@@ -55,6 +51,7 @@ Go to top of the SwaggerUI and authorise by typing in:
     username, password, id of the username and the token generated
 
 The admin account can be used to login, and perform admin actions like make movies or view user review counts
+
 ## Making a Movie
 
 This is the example body of making a movie
