@@ -55,6 +55,20 @@ Go to top of the SwaggerUI and authorise by typing in:
     username, password, id of the username and the token generated
 
 The admin account can be used to login, and perform admin actions like make movies or view user review counts
+## Making a Movie
+
+This is the example body of making a movie
+
+"name": "The Shawshank Redemption",
+"summary": "Two imprisoned men bond over a number of years, finding solace and eventual redemption through acts of common decency.",
+"release": 1994,
+"runtime": 142, "This is in minutes"
+"director": "Frank Darabont", 
+"revenue": 28341469, "this is the exact value"
+"genre": [
+    "Drama" "list the genres"
+]
+
 
 ## API Documentation
 APIdocumentation.pdf details the endpoints and the response models for the API 
