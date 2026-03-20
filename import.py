@@ -1,10 +1,22 @@
 import csv
-from database import session_local
-from model import Movie, Genre
+from database import session_local, engine, Base
+from model import Movie, Genre, User
+
+Base.metadata.create_all(bind=engine)
 
 db = session_local()
 
-with open("app/imdb_top_1000.csv", encoding="utf-8") as f:
+# Add Admin
+user = User(
+    username="admin", password="admin_password", email="admin@gmail.com", admin=True
+)
+db.add(user)
+if user:
+    print("Admin Was Made")
+else:
+    print("Failed to make admin")
+
+with open("imdb_top_1000.csv", encoding="utf-8") as f:
     reader = csv.DictReader(f)
     for row in reader:
         runtime = row["Runtime"]
@@ -31,5 +43,6 @@ with open("app/imdb_top_1000.csv", encoding="utf-8") as f:
                     db.flush()
                 movie.genre.append(genre)
     db.commit()
+
 db.close()
 print("Complete")

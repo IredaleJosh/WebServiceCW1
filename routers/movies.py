@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from app.database import get_db
-from app.model import Movie, User, Genre
-from app.dependencies import check_admin
-from app.schemas.movies import MovieCreate, MovieUpdate, MovieRead, MovieDelete
+from database import get_db
+from model import Movie, User, Genre
+from dependencies import check_admin
+from schemas.movies import MovieCreate, MovieUpdate, MovieRead, MovieDelete
 
 router = APIRouter(prefix="/movies", tags=["Movies"])
 

@@ -2,7 +2,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 
-database_url = "postgresql://josh:movie-secret@localhost/moviedb"
+database_url = "postgresql://postgres:movie-secret@localhost/moviedb"
 # creates database engine and connects to postgresql
 engine = create_engine(database_url)
 # creates session factory, temp connection to database 
@@ -21,9 +21,4 @@ def get_db():
         yield db
     finally:
         db.close()
-
-# basic query to test its connected to engine
-# with engine.connect() as conn:
-#     result = conn.execute(text("SELECT 1;"))
-#     print(result.fetchone())
 

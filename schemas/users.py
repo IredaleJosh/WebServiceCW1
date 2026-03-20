@@ -1,6 +1,6 @@
 from pydantic import BaseModel, EmailStr, Field
 from typing import Optional
-from app.schemas.ratings import RatingRead
+from schemas.ratings import RatingRead
 
 # Display all but password
 class UserBase(BaseModel):

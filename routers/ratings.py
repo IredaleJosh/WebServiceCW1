@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from app.database import get_db
-from app.dependencies import get_curr_user
-from app.model import Rating, User, Movie
-from app.schemas.ratings import RatingDisplay, RatingCreate, RatingUpdate, RatingDelete
+from database import get_db
+from dependencies import get_curr_user
+from model import Rating, User, Movie
+from schemas.ratings import RatingDisplay, RatingCreate, RatingUpdate, RatingDelete
 
 router = APIRouter(prefix="/ratings", tags=["Ratings"])
 

@@ -1,9 +1,9 @@
 # inside directory with __init__.py, so a module of the package: app.main
 from fastapi import FastAPI
-from app.routers.movies import router as movies_routers
-from app.routers.users import router as users_routers
-from app.routers.ratings import router as rating_routers
-from app.routers.analytics import router as analytics_routers
+from routers.movies import router as movies_routers
+from routers.users import router as users_routers
+from routers.ratings import router as rating_routers
+from routers.analytics import router as analytics_routers
 
 # Overview
 app = FastAPI(

@@ -2,7 +2,7 @@ from pydantic import BaseModel
 from typing import Optional
 from datetime import date
 from enum import Enum
-from app.schemas.ratings import RatingRead
+from schemas.ratings import RatingRead
 
 # displays the options to filter movies
 class SortRatings(str, Enum):

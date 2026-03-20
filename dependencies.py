@@ -1,18 +1,15 @@
 # dependencies/ Security
 # annotated --> allows for extra information, in most cases extra validation
 from fastapi import Header, HTTPException, Depends
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from typing import Annotated
+from fastapi.security import OAuth2PasswordBearer
+from typing import Optional
 from sqlalchemy.orm import Session
 import jwt
-from jwt.exceptions import InvalidTokenError
-from pwdlib import PasswordHash
-from pydantic import BaseModel
 from datetime import datetime, timedelta, timezone
 
-from app.model import User
-from app.schemas.users import UserBase
-from app.database import get_db
+from model import User
+from schemas.users import UserBase
+from database import get_db
 
 # Needed for JWT
 
@@ -25,7 +22,7 @@ SECRET_KEY = "0677cc7030a9744e564f60ecace0b81eca1c4a950344836704a518660ba75a19"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl = "users/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl = "login")
 
 # Get the User and return them if they are in the database
 def get_user(username: str, db : Session):
@@ -64,13 +61,3 @@ async def check_admin(curr_user : User = Depends(get_curr_user)):
     if curr_user.admin == False:
         raise HTTPException(status_code=403, detail="Admins Only")
     return curr_user
-
-
-async def get_token_head(x_token: Annotated[str, Header()]):
-    if x_token != "fake-super-secret-token":
-        raise HTTPException(status_code=400, detail="X-Token header invalid")
-
-
-async def get_query_token(token: str):
-    if token != "jessica":
-        raise HTTPException(status_code=400, detail="No Jessica token provided") 

@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, Table, Boolean
 from sqlalchemy import ForeignKey, CheckConstraint
 from sqlalchemy.orm import relationship
-from app.database import Base
+from database import Base
 
 # M:M - Movies and Genres
 movie_genre = Table(

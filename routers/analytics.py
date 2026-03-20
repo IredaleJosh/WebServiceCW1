@@ -2,10 +2,10 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 
-from app.database import get_db
-from app.model import Movie, Rating, User, Genre
-from app.dependencies import check_admin
-from app.schemas.analytics import SortRatings, DisplayMovies, DisplayUsers, FindGenre, DisplayMovieShort, DisplayReviewNumber, DisplayMovieAvg
+from database import get_db
+from model import Movie, Rating, User, Genre
+from dependencies import check_admin
+from schemas.analytics import SortRatings, DisplayMovies, DisplayUsers, FindGenre, DisplayMovieShort, DisplayReviewNumber, DisplayMovieAvg
 
 router = APIRouter(prefix="/analytics", tags=["Analytics"])
 

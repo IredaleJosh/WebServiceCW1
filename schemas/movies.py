@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field, field_validator
 from typing import Optional
 from datetime import datetime
-from app.schemas.ratings import RatingRead
+from schemas.ratings import RatingRead
 
 # Genres
 class GenreDisplay(BaseModel):
@@ -24,19 +24,6 @@ class MovieCreate(BaseModel):
             raise ValueError("Cannot be a future date")
         return time
 
-    model_config = {
-        "json_schema_extra": {
-            "example": {
-                "name": "Movie name",
-                "summary": "350 character descriptor",
-                "name": "Year of release",
-                "runtime": "runtime in minutes",
-                "director": "first and last name of director",
-                "revenue": "total revenue to the pound",
-                "genres": "list of genres (must be a valid genre)",
-            }
-        }
-    }
     
 # How Movies are Displayed
 class MovieRead(BaseModel):
