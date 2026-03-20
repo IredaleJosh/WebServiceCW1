@@ -56,13 +56,5 @@ Go to top of the SwaggerUI and authorise by typing in:
 
 The admin account can be used to login, and perform admin actions like make movies or view user review counts
 
-
-
 ## API Documentation
 APIdocumentation.pdf details the endpoints and the response models for the API 
-
-
-USE QUOTES TO ACCESS DATABASE
-
-sudo /usr/pgadmin4/bin/setup-web.sh to activate pgadmin for testing
-sudo -i -u postgres to access psql
